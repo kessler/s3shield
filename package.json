@@ -1,6 +1,6 @@
 {
   "name": "s3shield",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "lib/s3shield.js",
   "description": "small abstraction over various s3 clients",
   "homepage": "https://github.com/kessler/s3shield",
