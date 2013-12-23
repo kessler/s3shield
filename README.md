@@ -15,11 +15,6 @@ var clientProvider = s3shield.S3ClientProviderSelector.get('knox'); // can also 
 
 var client = clientProvder.get('mybucket');
 
-client.putFile('1.log', function(err) {
-
-});
-
-//var message = new s3shield.Message();
 
 ```
 
