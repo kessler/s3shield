@@ -14,7 +14,10 @@ describe('FaultyS3Client', function () {
 		var errors = 0;
 
 		function cb (err) {
-			if (err) errors++;
+
+			if (err) {
+				errors++;
+			}
 		}
 
 		client.put('k', 'd', cb);
@@ -24,8 +27,9 @@ describe('FaultyS3Client', function () {
 
 		assert.strictEqual(errors, 2);
 
-		assert.strictEqual(fsMock.invocations.length, 2);
-		assert.strictEqual(fsMock.invocations[0].method, 'writeFile');
-		assert.strictEqual(fsMock.invocations[1].method, 'writeFile');
+
+		assert.strictEqual(fsMock.invocations.length, 4);
+		assert.strictEqual(fsMock.invocations[2].method, 'writeFile');
+		assert.strictEqual(fsMock.invocations[3].method, 'writeFile');
 	});
 });
