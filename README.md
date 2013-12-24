@@ -15,6 +15,17 @@ var clientProvider = s3shield.S3ClientProviderSelector.get('knox'); // can also 
 
 var client = clientProvder.get('mybucket');
 
+client.put('mykey', 'mydata', callback);
+
+client.putFile('mykey', 'a/file/some/where.log', callback);
+
+var http = require('http');
+
+http.createServer(function(request, response) {
+	client.putStream('myKey', request, function(err) {
+		response.end();
+	});
+}).listen(8080);
 
 ```
 
