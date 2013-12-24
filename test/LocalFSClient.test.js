@@ -13,7 +13,6 @@ function newClient(fsMock) {
 
 describe('LocalFSClient', function () {
 
-
 	describe('saves data to the local fs', function () {
 
 		it('implements put', function () {
@@ -23,10 +22,10 @@ describe('LocalFSClient', function () {
 
 			topic.put('key', 'data', function () {});
 
-			assert.strictEqual(fsMock.invocations[0].method, 'writeFile');
-			assert.strictEqual(fsMock.invocations[0].arguments[0], path.join('a', 'key'));
-			assert.strictEqual(fsMock.invocations[0].arguments[1], 'data');
-			assert.strictEqual(typeof(fsMock.invocations[0].arguments[2]), 'function');
+			assert.strictEqual(fsMock.invocations[2].method, 'writeFile');
+			assert.strictEqual(fsMock.invocations[2].arguments[0], path.join('a', 'key'));
+			assert.strictEqual(fsMock.invocations[2].arguments[1], 'data');
+			assert.strictEqual(typeof(fsMock.invocations[2].arguments[2]), 'function');
 		});
 
 		it('implements putFile', function () {
@@ -40,14 +39,51 @@ describe('LocalFSClient', function () {
 			assert.strictEqual(fsMock.invocations[0].arguments[0], 'myfile');
 			assert.strictEqual(typeof(fsMock.invocations[0].arguments[1]), 'function');
 
-			assert.strictEqual(fsMock.invocations[1].method, 'writeFile');
-			assert.strictEqual(fsMock.invocations[1].arguments[0], path.join('a', 'key'));
-			assert.strictEqual(fsMock.invocations[1].arguments[1], FSMock.FILECONTENT);
-			assert.strictEqual(typeof(fsMock.invocations[1].arguments[2]), 'function');
+			assert.strictEqual(fsMock.invocations[3].method, 'writeFile');
+			assert.strictEqual(fsMock.invocations[3].arguments[0], path.join('a', 'key'));
+			assert.strictEqual(fsMock.invocations[3].arguments[1], FSMock.FILECONTENT);
+			assert.strictEqual(typeof(fsMock.invocations[3].arguments[2]), 'function');
 		});
 
 		it.skip('implements putStream', function () {
 
+		});
+	});
+
+	describe('creates a directory if it doesnt exist', function () {
+
+		it ('check and possible creation is done lazily', function () {
+			var fsMock = FSMock.create();
+			var topic = newClient(fsMock);
+
+			topic.put('key', 'data', function () {});
+
+			assert.strictEqual(fsMock.invocations[0].method, 'exists');
+			assert.strictEqual(fsMock.invocations[0].arguments[0], 'a');
+
+			assert.strictEqual(fsMock.invocations[1].method, 'mkdir');
+			assert.strictEqual(fsMock.invocations[1].arguments[0], 'a');
+		});
+
+		it('check and creation is only done once', function () {
+
+			var fsMock = FSMock.create();
+			var topic = newClient(fsMock);
+
+			topic.put('key', 'data', function () {});
+			topic.put('key', 'data', function () {});
+
+			assert.strictEqual(fsMock.invocations[0].method, 'exists');
+			assert.strictEqual(fsMock.invocations[0].arguments[0], 'a');
+
+			assert.strictEqual(fsMock.invocations[1].method, 'mkdir');
+			assert.strictEqual(fsMock.invocations[1].arguments[0], 'a');
+
+			assert.strictEqual(fsMock.invocations[2].method, 'writeFile');
+
+			assert.strictEqual(fsMock.invocations[3].method, 'writeFile');
+
+			assert.strictEqual(fsMock.invocations.length, 4);
 		});
 	});
 });
