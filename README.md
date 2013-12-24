@@ -46,7 +46,7 @@ http.createServer(function(request, response) {
 	// used by knox client provider to catch a client per bucket
 	"lru": {
 		"max": 100,
-		"maxAge": 360000
+		"maxAge": 86400000
 	},
 
 	// if enabled will gzip a message or a file to local file before uploading
