@@ -3,18 +3,23 @@ var _ = require('lodash');
 var assert = require('assert');
 var async = require('async');
 var aws = require('aws-sdk');
+var zlib = require('zlib');
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 var conf = require('../lib/config.js');
 
+var StreamToBuffer = require('../lib/StreamToBuffer.js');
 var AwsS3Client = require('../lib/AwsS3Client.js');
 
 //
 
-function AwsS3ClientIntegrationTest() {
+function AwsS3ClientIntegrationTest(withGzip) {
 	this._testData = new Buffer('testData' + Date.now());
 	this._client = null;
 	this._fetchedData = null;
 	this._awsClient = null;
+	this._withGzip = withGzip;
 };
 
 var p = AwsS3ClientIntegrationTest.prototype;
@@ -25,27 +30,28 @@ p.start = function(callback) {
 		//_.bind(this._clean, this),
 		_.bind(this._createClient, this),
 		_.bind(this._put, this),
+		_.bind(this._wait, this, 200),
 		_.bind(this._fetch, this),
 		_.bind(this._check, this),
 	], callback);
 };
 
 p._createClient = function(callback) {
-	//console.log('_createClient');
+	console.log('_createClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
 	options.bucket = 'rtb-redshift';
-	this._client = new AwsS3Client(options);
+	this._client = new AwsS3Client(options, { enabled: this._withGzip });
 	callback(null);
 };
 
 p._put = function(callback) {
-	//console.log('_put');
+	console.log('_put');
 	this._client.put('test/awsS3Client.txt', this._testData, callback);
 };
 
 p._createAwsClient = function(callback) {
-	//console.log('_createAwsClient');
+	console.log('_createAwsClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
 	options.bucket = 'rtb-redshift';
@@ -54,18 +60,30 @@ p._createAwsClient = function(callback) {
 };
 
 p._fetch = function(callback) {
-	//console.log('_fetch');
+	console.log('_fetch');
+	var key = 'test/awsS3Client.txt';
+	if (this._withGzip) {
+		key += '.gz';
+	}
 	var options = {
 		Bucket: 'rtb-redshift',
-		Key: 'test/awsS3Client.txt'
+		Key: key
 	};
-	var onObjectGot = _.bind(this._onObjectGot, this, callback);
-	var request = this._awsClient.getObject(options, onObjectGot);
+	var request = this._awsClient.getObject(options);
+	var onSucess = _.bind(this._onSucess, this, callback);
+	request.on('success', onSucess);
+	request.on('error', callback);
 	request.send();
 };
 
+p._onSucess = function(callback, res) {
+	console.log('_onSucess');
+	this._fetchedData = res.data.Body;
+	callback(null);
+};
+
 p._onObjectGot = function(callback, err, data) {
-	//console.log('_onObjectGot');
+	console.log('_onObjectGot', err, data);
 	if (err) {
 		callback(err);
 		return;
@@ -75,8 +93,24 @@ p._onObjectGot = function(callback, err, data) {
 };
 
 p._check = function(callback) {
-	//console.log('_check');
-	assert.strictEqual(this._fetchedData.toString(), this._testData.toString());
+	console.log('_check');
+	var fetchedData = this._fetchedData;
+	console.log(fetchedData);
+	if (this._withGzip) {
+		var gunzip = zlib.createGunzip();
+		var onGunzipped = _.bind(this._onGunzipped, this, callback);
+		var streamToBuffer = new StreamToBuffer(gunzip, onGunzipped);
+		streamToBuffer.start();
+		gunzip.end(fetchedData);
+	} else {
+		assert.strictEqual(fetchedData.toString(), this._testData.toString());
+		callback(null);
+	}
+};
+
+p._onGunzipped = function(callback, err, buffer) {
+	console.log('_onGunzipped');
+	assert.strictEqual(buffer.toString(), this._testData.toString());
 	callback(null);
 };
 
@@ -88,6 +122,11 @@ p._clean = function(callback) {
 	};
 	var request = this._awsClient.deleteObject(options, callback);
 	request.send();
+};
+
+p._wait = function(time, callback) {
+	console.log('_wait');
+	setTimeout(callback, time);
 };
 
 delete p;
@@ -112,7 +151,43 @@ describe('AwsS3Client', function() {
 
 	});
 
-	it('put', function() {
+	it('put without gzip', function() {
+
+		var testData = new Buffer('testData');
+
+		var mockRequestCallCount = 0;
+
+		var mock = {
+
+			_bucket: 'testBucket',
+
+			_gzipOptions: {
+				enabled: false
+			},
+
+			_request: function(putObjectOptions, key, data, callback) {
+				var body = putObjectOptions.Body;
+				assert.strictEqual(body.toString(), testData.toString());
+				delete putObjectOptions.Body;
+				assert.deepEqual(putObjectOptions, {
+					Bucket: 'testBucket',
+					Key: 'testKey'
+				});
+				assert.strictEqual(key, 'testKey');
+				assert.strictEqual(testData, data);
+				assert.strictEqual(callback, 'testCallback');
+				mockRequestCallCount++;
+			}
+
+		};
+
+		AwsS3Client.prototype.put.call(mock, 'testKey', testData, 'testCallback');
+
+		assert.strictEqual(mockRequestCallCount, 1);
+
+	});
+
+	it('_request', function() {
 
 		var testData = new Buffer('testData');
 
@@ -130,7 +205,7 @@ describe('AwsS3Client', function() {
 				}
 				if (mockRequestOnCallCount === 1) {
 					assert.strictEqual(type, 'success');
-					callback('testResponse');
+					callback();
 				}
 				mockRequestOnCallCount++;
 			},
@@ -154,8 +229,7 @@ describe('AwsS3Client', function() {
 			_client: {
 
 				putObject: function(putObjectOptions) {
-					assert.strictEqual(putObjectOptions.Bucket, 'testBucket');
-					assert.strictEqual(putObjectOptions.Body, testData);
+					assert.strictEqual(putObjectOptions, 'testPutObjectOptions');
 					mockClientPutObjectCallCount++;
 					return mockRequest;
 				}
@@ -164,12 +238,13 @@ describe('AwsS3Client', function() {
 
 		};
 
-		AwsS3Client.prototype.put.call(mock, 'testKey', testData, 'testCallback');
+		AwsS3Client.prototype._request.call(mock, 'testPutObjectOptions', 'testKey', 'testSata', 'testCallback');
 
 		assert.strictEqual(mockRequestOnCallCount, 2);
 		assert.strictEqual(mockRequestSendCallCount, 1);
 		assert.strictEqual(mockClientPutObjectCallCount, 1);
 		assert.strictEqual(mockOnSuccessCallCount, 1);
+
 	});
 
 	it('putFile', function() {
@@ -206,9 +281,15 @@ describe('AwsS3Client', function() {
 
 	});
 
-	it('It all works together', function(callback) {
-		this.timeout(50000);
-		var awsS3ClientIntegrationTest = new AwsS3ClientIntegrationTest();
+	it('It all works together without gzip', function(callback) {
+		this.timeout(10000);
+		var awsS3ClientIntegrationTest = new AwsS3ClientIntegrationTest(false);
+		awsS3ClientIntegrationTest.start(callback);
+	});
+
+	it('It all works together gzip', function(callback) {
+		this.timeout(10000);
+		var awsS3ClientIntegrationTest = new AwsS3ClientIntegrationTest(true);
 		awsS3ClientIntegrationTest.start(callback);
 	});
 
