@@ -37,7 +37,7 @@ p.start = function(callback) {
 };
 
 p._createClient = function(callback) {
-	console.log('_createClient');
+	// console.log('_createClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
 	options.bucket = 'rtb-redshift';
@@ -46,12 +46,12 @@ p._createClient = function(callback) {
 };
 
 p._put = function(callback) {
-	console.log('_put');
+	// console.log('_put');
 	this._client.put('test/awsS3Client.txt', this._testData, callback);
 };
 
 p._createAwsClient = function(callback) {
-	console.log('_createAwsClient');
+	// console.log('_createAwsClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
 	options.bucket = 'rtb-redshift';
@@ -60,7 +60,7 @@ p._createAwsClient = function(callback) {
 };
 
 p._fetch = function(callback) {
-	console.log('_fetch');
+	// console.log('_fetch');
 	var key = 'test/awsS3Client.txt';
 	if (this._withGzip) {
 		key += '.gz';
@@ -77,13 +77,13 @@ p._fetch = function(callback) {
 };
 
 p._onSucess = function(callback, res) {
-	console.log('_onSucess');
+	// console.log('_onSucess');
 	this._fetchedData = res.data.Body;
 	callback(null);
 };
 
 p._onObjectGot = function(callback, err, data) {
-	console.log('_onObjectGot', err, data);
+	// console.log('_onObjectGot', err, data);
 	if (err) {
 		callback(err);
 		return;
@@ -93,9 +93,9 @@ p._onObjectGot = function(callback, err, data) {
 };
 
 p._check = function(callback) {
-	console.log('_check');
+	// console.log('_check');
 	var fetchedData = this._fetchedData;
-	console.log(fetchedData);
+	// console.log(fetchedData);
 	if (this._withGzip) {
 		var gunzip = zlib.createGunzip();
 		var onGunzipped = _.bind(this._onGunzipped, this, callback);
@@ -109,13 +109,13 @@ p._check = function(callback) {
 };
 
 p._onGunzipped = function(callback, err, buffer) {
-	console.log('_onGunzipped');
+	// console.log('_onGunzipped');
 	assert.strictEqual(buffer.toString(), this._testData.toString());
 	callback(null);
 };
 
 p._clean = function(callback) {
-	//console.log('_clean');
+	// console.log('_clean');
 	var options = {
 		Bucket: 'rtb-redshift',
 		Key: 'test/awsS3Client.txt'
@@ -125,7 +125,7 @@ p._clean = function(callback) {
 };
 
 p._wait = function(time, callback) {
-	console.log('_wait');
+	// console.log('_wait');
 	setTimeout(callback, time);
 };
 
