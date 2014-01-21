@@ -333,7 +333,7 @@ describe('AwsS3Client', function() {
 
 	});
 
-	it.skip('putFile', function() {
+	it('putFile', function() {
 
 		var mockFsReadFileCallCount = 0;
 		var mockOnFileReadCallCount = 0;

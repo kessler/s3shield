@@ -39,13 +39,16 @@ http.createServer(function(request, response) {
 
 	// aws config
 	"aws": {
-		"region": "us-standard",
+		"region": "your region",
 		"accessKeyId": "your access key",
 		"secretAccessKey": "your secret"
 	},
 
+	"clientType": "knox" || "aws-sdk" || "faulty" || "local", // default is knox
+
 	// see lru-cache for all the options
 	// used by knox client provider to catch a client per bucket
+
 	"lru": {
 		"max": 100,
 		"maxAge": 86400000
