@@ -276,6 +276,7 @@ describe('AwsS3Client', function() {
 		var mockRequestSendCallCount = 0;
 		var mockClientPutObjectCallCount = 0;
 		var mockCallbackCallCount = 0;
+		var mockOnSucessCallCount = 0;
 
 		var mockRequest = {
 
@@ -286,7 +287,7 @@ describe('AwsS3Client', function() {
 				}
 				if (mockRequestOnCallCount === 1) {
 					assert.strictEqual(type, 'success');
-					callback();
+					callback('testError', 'testResponse');
 				}
 				mockRequestOnCallCount++;
 			},
@@ -310,6 +311,13 @@ describe('AwsS3Client', function() {
 					return mockRequest;
 				}
 
+			},
+
+			_onSuccess: function(callback, err, response) {
+				assert.strictEqual(err, 'testError');
+				assert.strictEqual(response, 'testResponse');
+				callback(null);
+				mockOnSucessCallCount++;
 			}
 
 		};
@@ -330,6 +338,7 @@ describe('AwsS3Client', function() {
 		assert.strictEqual(mockRequestSendCallCount, 1);
 		assert.strictEqual(mockClientPutObjectCallCount, 1);
 		assert.strictEqual(mockCallbackCallCount, 2);
+		assert.strictEqual(mockOnSucessCallCount, 1);
 
 	});
 
