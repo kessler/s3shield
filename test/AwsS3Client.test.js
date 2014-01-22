@@ -457,13 +457,13 @@ describe('AwsS3Client', function() {
 	});
 
 	it('It all works together without gzip', function(callback) {
-		this.timeout(10000);
+		this.timeout(20000);
 		var awsS3ClientIntegrationTest = new AwsS3ClientIntegrationTest(false);
 		awsS3ClientIntegrationTest.start(callback);
 	});
 
 	it('It all works together gzip', function(callback) {
-		this.timeout(10000);
+		this.timeout(20000);
 		var awsS3ClientIntegrationTest = new AwsS3ClientIntegrationTest(true);
 		awsS3ClientIntegrationTest.start(callback);
 	});
