@@ -11,9 +11,7 @@ npm install s3shield
 ```
 var s3shield = require('s3shield');
 
-var clientProviderClass = s3shield.S3ClientProviderSelector.get('knox'); // can also use 'faulty' to get a client that simulates errors and works against local file system but with same api
-
-var clientProvider = new clientProviderClass();
+var clientProvider = s3shield.S3ClientProviderFactory.get('knox', /* optional s3 config to override rc*/); // can also use 'faulty' to get a client that simulates errors and works against local file system but with same api
 
 var client = clientProvider.get('mybucket');
 
