@@ -19,23 +19,24 @@
     }
   ],
   "devDependencies": {
+    "chai": "^1.9.1",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-watch": "~0.5.0",
-    "load-grunt-tasks": "~0.2.0",
-    "time-grunt": "~0.1.1",
-    "jshint-stylish": "~0.1.3",
     "grunt-mocha-test": "~0.7.0",
-    "polymock": "~1.1.2"
+    "jshint-stylish": "~0.1.3",
+    "load-grunt-tasks": "~0.2.0",
+    "polymock": "~1.1.2",
+    "time-grunt": "~0.1.1"
   },
   "dependencies": {
-    "async": "~0.2.9",
-    "aws-sdk": "~2.0.0-rc8",
-    "knox": "~0.8.8",
+    "async": "~0.9.0",
+    "aws-sdk": "~2.0.0-rc.20",
+    "knox": "~0.9.0",
     "lodash": "~2.4.1",
     "lru-cache": "~2.5.0",
     "polymock": "~1.1.3",
-    "rc": "~0.3.2",
+    "rc": "~0.4.0",
     "stubborn": "0.1.0"
   }
 }
