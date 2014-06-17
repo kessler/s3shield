@@ -110,4 +110,44 @@ describe('AbstractS3Client', function() {
 
 	});
 
+	it('_genericPut', function() {
+
+		var mockStubbornCallCount = 0;
+		var mockStubbornRunCallCount = 0;
+		var mockCallbackCallCount = 0;
+
+		var mock = {
+
+			_progression: 'testProgression',
+
+			_Stubborn: function(task, options, callback) {
+
+				assert.instanceOf(this, mock._Stubborn);
+				assert.strictEqual(task, 'testTask');
+				assert.deepEqual(options, { maxAttempts: 8, delayProgression: 'testProgression' });
+
+				callback('testError');
+
+				this.run = function() {
+					mockStubbornRunCallCount++;
+				};
+
+				mockStubbornCallCount++;
+			}
+
+		};
+
+		var mockCallback = function(err) {
+			assert.strictEqual(err, 'testError');
+			mockCallbackCallCount++;
+		};
+
+		AbstractS3Client.prototype._genericPut.call(mock, 'testTask', mockCallback);
+
+		assert.strictEqual(mockStubbornCallCount, 1);
+		assert.strictEqual(mockStubbornRunCallCount, 1);
+		assert.strictEqual(mockCallbackCallCount, 1);
+
+	});
+
 });
