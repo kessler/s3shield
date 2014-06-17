@@ -1,4 +1,3 @@
-
 var _ = require('lodash');
 var assert = require('assert');
 var async = require('async');
@@ -30,7 +29,7 @@ p.start = function(callback) {
 		_.bind(this._put, this),
 		_.bind(this._wait, this, 100),
 		_.bind(this._fetch, this),
-		_.bind(this._check, this),
+		_.bind(this._check, this)
 	], callback);
 };
 
@@ -45,7 +44,7 @@ p._createClient = function(callback) {
 
 p._put = function(callback) {
 	// console.log('_put');
-	this._client.put('test/awsS3Client.txt', this._testData, callback);
+	this._client.put('test/awsS3Client.txt', this._testData, 10, callback);
 };
 
 p._createAwsClient = function(callback) {
@@ -152,7 +151,7 @@ describe('AwsS3Client', function() {
 
 	});
 
-	it('put without gzip', function() {
+	it('_put without gzip', function() {
 
 		var testData = new Buffer('testData');
 
@@ -182,13 +181,13 @@ describe('AwsS3Client', function() {
 
 		};
 
-		AwsS3Client.prototype.put.call(mock, 'testKey', testData, 'testCallback');
+		AwsS3Client.prototype._put.call(mock, 'testKey', testData, 'testCallback');
 
 		assert.strictEqual(mockRequestCallCount, 1);
 
 	});
 
-	it('put with gzip', function() {
+	it('_put with gzip', function() {
 
 		var testData = new Buffer('testData');
 
@@ -258,7 +257,7 @@ describe('AwsS3Client', function() {
 
 		};
 
-		AwsS3Client.prototype.put.call(mock, 'testKey', testData, 'testCallback');
+		AwsS3Client.prototype._put.call(mock, 'testKey', testData, 'testCallback');
 
 		assert.strictEqual(mockGzipEndCallCount, 1);
 		assert.strictEqual(mockZlibCreateGzipCallCount, 1);
@@ -342,7 +341,7 @@ describe('AwsS3Client', function() {
 
 	});
 
-	it('putFile', function() {
+	it('_putFile', function() {
 
 		var mockFsReadFileCallCount = 0;
 		var mockOnFileReadCallCount = 0;
@@ -369,7 +368,7 @@ describe('AwsS3Client', function() {
 
 		};
 
-		AwsS3Client.prototype.putFile.call(mock, 'testKey', 'testFile', 'testCallback');
+		AwsS3Client.prototype._putFile.call(mock, 'testKey', 'testFile', 'testCallback');
 
 		assert.strictEqual(mockFsReadFileCallCount, 1);
 		assert.strictEqual(mockOnFileReadCallCount, 1);
