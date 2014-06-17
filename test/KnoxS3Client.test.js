@@ -27,8 +27,6 @@ describe('KnoxS3Client', function () {
 
 		it('put()s a string', function (done) {
 
-			console.log(config.aws);
-
 			var client = new KnoxS3Client(config.aws, config.gzip, config.uploadEncoding);
 
 			var requestMock = createRequestMock();

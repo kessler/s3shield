@@ -51,7 +51,7 @@ p._createAwsClient = function(callback) {
 	// console.log('_createAwsClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
-	options.bucket = 'rtb-redshift';
+	options.bucket = conf.aws.bucket;
 	this._awsClient = new aws.S3(options);
 	callback(null);
 };
