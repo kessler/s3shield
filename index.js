@@ -1,3 +1,4 @@
+module.exports.S3ClientProviderFactory = require('./lib/S3ClientProviderFactory.js');
 module.exports.S3ClientProviderSelector = require('./lib/S3ClientProviderSelector.js');
 module.exports.AbstractS3Client = require('./lib/AbstractS3Client.js');
 module.exports.FaultyS3Client = require('./lib/FaultyS3Client.js');
