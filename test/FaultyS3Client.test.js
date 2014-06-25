@@ -20,10 +20,10 @@ describe('FaultyS3Client', function () {
 			}
 		}
 
-		client.put('k', 'd', cb);
-		client.put('k', 'd', cb);
-		client.put('k', 'd', cb);
-		client.put('k', 'd', cb);
+		client.put('k', 'd', 0, cb);
+		client.put('k', 'd', 0, cb);
+		client.put('k', 'd', 0, cb);
+		client.put('k', 'd', 0, cb);
 
 		assert.strictEqual(errors, 2);
 
