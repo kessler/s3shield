@@ -18,7 +18,7 @@ describe('AbstractS3Client', function() {
 
 	});
 
-	it('put', function() {
+	it.skip('put', function() {
 
 		var mockGenericPutCallCount = 0;
 		var mockPutCallCount = 0;
@@ -48,7 +48,7 @@ describe('AbstractS3Client', function() {
 
 	});
 
-	it('putFile', function() {
+	it.skip('putFile', function() {
 
 		var mockGenericPutCallCount = 0;
 		var mockPutFileCallCount = 0;
@@ -78,7 +78,7 @@ describe('AbstractS3Client', function() {
 
 	});
 
-	it('_genericPut', function() {
+	it.skip('_genericPut', function() {
 
 		var mockStubbornCallCount = 0;
 		var mockStubbornRunCallCount = 0;

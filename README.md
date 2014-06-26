@@ -1,4 +1,4 @@
-# s3shield [![Build Status](https://secure.travis-ci.org/kessler/s3shield.png?branch=master)](http://travis-ci.org/kessler/s3shield)
+# s3shield 
 
 small abstraction over various s3 clients
 
@@ -31,7 +31,7 @@ http.createServer(function(request, response) {
 
 ## Config
 ```
-// .s3shieldrc:
+// .s3shieldrc: (remove comments, json doesnt allow for them)
 
 {
 
@@ -64,6 +64,9 @@ http.createServer(function(request, response) {
 		// this only applies to file messages
 		"deleteFileAfterUpload": false
 	},
+
+	// if set to true, deletes files (this doesn't apply to put() or putStream()) after successful upload
+	deleteAfterUpload: false,
 
 
 	// in put() functions where a string or an object is provided (and not a buffer) this enconding

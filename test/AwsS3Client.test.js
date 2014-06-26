@@ -37,7 +37,6 @@ p._createClient = function(callback) {
 	// console.log('_createClient');
 	var options = _.clone(conf.aws);
 	options.region = null;
-	options.bucket = 'rtb-redshift';
 	this._client = new AwsS3Client(options, { enabled: this._withGzip });
 	callback(null);
 };
@@ -63,7 +62,7 @@ p._fetch = function(callback) {
 		key += '.gz';
 	}
 	var options = {
-		Bucket: 'rtb-redshift',
+		Bucket: conf.aws.bucket,
 		Key: key
 	};
 	var request = this._awsClient.getObject(options);
@@ -114,7 +113,7 @@ p._onGunzipped = function(callback, err, buffer) {
 p._clean = function(callback) {
 	// console.log('_clean');
 	var options = {
-		Bucket: 'rtb-redshift',
+		Bucket: conf.aws.bucket,
 		Key: 'test/awsS3Client.txt'
 	};
 	var request = this._awsClient.deleteObject(options, callback);
