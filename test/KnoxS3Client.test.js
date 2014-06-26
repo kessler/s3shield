@@ -39,7 +39,7 @@ describe('KnoxS3Client', function () {
 
 			client._client = knoxMock.object;
 
-			client.put('my/key', data, function(err, actualResponse) {
+			client.put('my/key', data, 10, function(err, actualResponse) {
 
 				assert.ok(!err);
 				assert.strictEqual(expectedResponse, actualResponse);
