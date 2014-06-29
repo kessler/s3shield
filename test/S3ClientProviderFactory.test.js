@@ -29,7 +29,7 @@ describe('S3ClientProviderFactory', function () {
 	})
 
 
-	it('creates an aws-sdk client provider', function () {
+	it.skip('creates an aws-sdk client provider', function () {
 		var provider = S3ClientProviderFactory.newInstance('aws-sdk', options)
 
 		assert.ok(provider instanceof AwsS3ClientProvider)

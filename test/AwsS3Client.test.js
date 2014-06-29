@@ -129,7 +129,7 @@ delete p;
 
 //
 
-describe('AwsS3Client', function() {
+describe.skip('AwsS3Client', function() {
 
 	it('constructs', function() {
 
